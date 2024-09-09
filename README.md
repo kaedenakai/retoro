@@ -8,7 +8,7 @@
 
 ## ③DEMO
 
-http://localhost/kadai08/index.php
+https://gs-kaede.sakura.ne.jp/kadai08/retro/
 
 ## ④作ったアプリケーション用のIDまたはPasswordがある場合
 
