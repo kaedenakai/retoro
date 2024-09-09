@@ -40,7 +40,35 @@ $json = json_encode($values,JSON_UNESCAPED_UNICODE);
 <title>レトロスペクティブ一覧</title>
 <link rel="stylesheet" href="css/range.css">
 <link href="css/bootstrap.min.css" rel="stylesheet">
-<style>div{padding: 10px;font-size:16px;}</style>
+<!-- DataTablesのCSSを読み込む -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/dataTables.bootstrap5.min.css">
+<script src="https://cdn.datatables.net/1.13.5/js/dataTables.bootstrap5.min.js"></script>
+<style>div{padding: 10px;font-size:16px;}
+  /* DataTablesのカスタムスタイリング */
+  .dataTables_wrapper {
+    margin: 20px 0;
+  }
+
+  table.dataTable thead {
+    background-color: #343a40; /* ヘッダーの背景色 */
+    color: white; /* ヘッダーの文字色 */
+  }
+
+  table.dataTable tbody tr:nth-child(even) {
+    background-color: #f8f9fa; /* 偶数行の背景色 */
+  }
+
+  table.dataTable tbody tr:hover {
+    background-color: #f1f1f1; /* ホバー時の背景色 */
+  }
+
+  table.dataTable thead th,
+  table.dataTable tbody td {
+    padding: 12px 15px;
+    border: 1px solid #dee2e6; /* セルの境界線 */
+  }
+</style>
 </head>
 <body id="main">
 <!-- Head[Start] -->
@@ -57,22 +85,51 @@ $json = json_encode($values,JSON_UNESCAPED_UNICODE);
 
 
 <!-- Main[Start] -->
-<div>
-    <div class="container jumbotron"></div>
-    <?php foreach($values as $v){ ?> 
-      <!-- 1レコードずつ$vに入れてくれる -->
-      <div><?=$v["name"]?></div>
-      <div><?=$v["url"]?></div>
-      <div><?=$v["memo"]?></div>
-    <?php }?>
+<div class="container">
+  <table id="table_id" class="table table-striped table-bordered">
+    <thead>
+      <tr>
+        <th>名前</th>
+        <th>URL</th>
+        <th>メモ</th>
+      </tr>
+    </thead>
+    <tbody>
+      <?php foreach($values as $v){ ?>
+        <tr>
+          <td><?=$v["name"]?></td>
+          <td><?=$v["url"]?></td>
+          <td><?=$v["memo"]?></td>
+        </tr>
+      <?php }?>
+    </tbody>
+  </table>
 </div>
 <!-- Main[End] -->
 
+<!-- jQueryの読み込み -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- DataTablesのJavaScriptを読み込む -->
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
 
 <script>
   //JSON受け取り
   const j = JSON.parse('<?=$json?>');
   console.log(j);
+
+  // DataTablesの初期化処理
+  $(document).ready(function() {
+    $('#table_id').DataTable({
+      "pagingType": "full_numbers",
+      "language": {
+        "lengthMenu": "1ページあたり _MENU_ 件表示",
+        "zeroRecords": "該当するデータが見つかりません",
+        "info": "ページ _PAGE_ / _PAGES_ を表示中",
+        "infoEmpty": "利用できるデータがありません",
+        "infoFiltered": "(_MAX_ 件からフィルタリング)"
+      }
+    });
+  });
 
 </script>
 </body>
