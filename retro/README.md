@@ -8,7 +8,7 @@
 
 ## ③DEMO
 
-http://localhost/kadai08/index.php
+http://localhost/kadai09/index.php
 
 ## ④作ったアプリケーション用のIDまたはPasswordがある場合
 
