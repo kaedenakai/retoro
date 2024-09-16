@@ -18,10 +18,30 @@ if($status==false) {
   exit("SQLError:".$error[2]);
 }
 
-//全データ取得
-$values =  $stmt->fetchAll(PDO::FETCH_ASSOC); //PDO::FETCH_ASSOC[カラム名のみで取得できるモード]
-//JSONい値を渡す場合に使う
-$json = json_encode($values,JSON_UNESCAPED_UNICODE);
+// 全データ取得
+$values = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// 不正な制御文字を削除するための関数
+function clean_json_data($data) {
+  foreach ($data as &$item) {
+      if (is_array($item)) {
+          $item = clean_json_data($item);
+      } elseif (is_string($item)) {
+          $item = preg_replace('/[\x00-\x1F\x7F]/u', '', $item); // 制御文字を削除
+      }
+  }
+  return $data;
+}
+
+// データ取得後にクリーンアップ
+$values = clean_json_data($values);
+
+// JSONエスケープ
+$json = htmlspecialchars($json, ENT_QUOTES, 'UTF-8');
+
+// JSONエンコードの結果を確認
+$json = json_encode($values, JSON_UNESCAPED_UNICODE);
+echo '<script>console.log(' . json_encode($json) . ');</script>';
 
 ?>
 
@@ -33,11 +53,14 @@ $json = json_encode($values,JSON_UNESCAPED_UNICODE);
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>レトロスペクティブ一覧</title>
-<link rel="stylesheet" href="css/range.css">
-<link href="css/bootstrap.min.css" rel="stylesheet">
+<!-- <link rel="stylesheet" href="css/range.css">
+<link href="css/bootstrap.min.css" rel="stylesheet"> -->
+<!-- jQueryの読み込み -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <!-- DataTablesのCSSを読み込む -->
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/dataTables.bootstrap5.min.css">
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
 <script src="https://cdn.datatables.net/1.13.5/js/dataTables.bootstrap5.min.js"></script>
 <style>div{padding: 10px;font-size:16px;}
   /* DataTablesのカスタムスタイリング */
@@ -124,15 +147,14 @@ $json = json_encode($values,JSON_UNESCAPED_UNICODE);
 </div>
 <!-- Main[End] -->
 
-<!-- jQueryの読み込み -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<!-- DataTablesのJavaScriptを読み込む -->
-<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
-
 <script>
-  //JSON受け取り
-  const j = JSON.parse('<?=$json?>');
-  console.log(j);
+    try {
+    // JSON受け取り
+    const j = JSON.parse('<?php echo $json; ?>');
+    console.log(j);
+  } catch (e) {
+    console.error('JSON parse error:', e);
+  }
 
   // DataTablesの初期化処理
   $(document).ready(function() {

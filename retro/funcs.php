@@ -11,10 +11,10 @@ function h($str)
 //DB変えたらここいじる
 function db_conn(){
     try {
-        $db_name = "gs_kadai";    //データベース名
-        $db_id   = "root";      //アカウント名
+        $db_name = "";    //データベース名
+        $db_id   = "";      //アカウント名
         $db_pw   = "";          //パスワード：XAMPPはパスワード無し or MAMPはパスワード”root”に修正してください。
-        $db_host = "localhost"; //DBホスト
+        $db_host = ""; //DBホスト
         return new PDO('mysql:dbname='.$db_name.';charset=utf8;host='.$db_host, $db_id, $db_pw);
     } catch (PDOException $e) { //returnで関数を外に出して使えるようにしている
         exit('DB Connection Error:'.$e->getMessage());
