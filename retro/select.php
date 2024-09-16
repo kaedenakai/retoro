@@ -3,24 +3,19 @@
 ini_set("display_errors", 1);
 
 //1.  DB接続します
-try {
-  //Password:MAMP='root',XAMPP=''
-  $pdo = new PDO('mysql:dbname=gs_kadai;charset=utf8;host=localhost','root',''); //ここがIDとPASS
-} catch (PDOException $e) {
-  //exitに文字を渡すとphpは処理が止まる仕様
-  exit('DBError:'.$e->getMessage());
-}
+include("funcs.php");
+$pdo = db_conn();
 
 //２．データ登録SQL作成
 $stmt = $pdo->prepare("SELECT * FROM kadai08");
 $status = $stmt->execute();
 
 //３．データ表示
-$view="";
+$values="";
 if($status==false) {
   //execute（SQL実行時にエラーがある場合）
   $error = $stmt->errorInfo();
-  exit("**********:".$error[2]);
+  exit("SQLError:".$error[2]);
 }
 
 //全データ取得
@@ -68,6 +63,24 @@ $json = json_encode($values,JSON_UNESCAPED_UNICODE);
     padding: 12px 15px;
     border: 1px solid #dee2e6; /* セルの境界線 */
   }
+
+  .btn-action {
+    padding: 5px 10px;
+    font-size: 14px;
+    border-radius: 5px;
+  }
+
+  .btn-update {
+    background-color: #007bff;
+    color: white;
+    border: none;
+  }
+
+  .btn-delete {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+  }
 </style>
 </head>
 <body id="main">
@@ -92,14 +105,18 @@ $json = json_encode($values,JSON_UNESCAPED_UNICODE);
         <th>名前</th>
         <th>URL</th>
         <th>メモ</th>
+        <th>更新</th>
+        <th>削除</th>
       </tr>
     </thead>
     <tbody>
       <?php foreach($values as $v){ ?>
         <tr>
           <td><?=$v["name"]?></td>
-          <td><?=$v["url"]?></td>
+          <td><a href="<?=$v["url"]?>" target="_blank">リンク</a></td>
           <td><?=$v["memo"]?></td>
+          <td><a href="detail.php?id=<?=$v['id']?>" class="btn-action btn-update">更新</a></td>
+          <td><a href="delete.php?id=<?=$v['id']?>" class="btn-action btn-delete">削除</a></td>
         </tr>
       <?php }?>
     </tbody>
